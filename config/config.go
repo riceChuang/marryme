@@ -10,7 +10,7 @@ var (
 )
 
 func Initial() *Config {
-	viper.SetConfigName("config")
+	viper.SetConfigName(".env")
 	viper.AddConfigPath(".")
 	viper.SetConfigType("yaml")
 
