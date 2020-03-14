@@ -1,4 +1,4 @@
-package marryme
+package handler
 
 import (
 	"context"
