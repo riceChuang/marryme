@@ -1,64 +1,26 @@
 package repo
 
 import (
-	"fmt"
 	"github.com/riceChuang/marryme/config"
-	"google.golang.org/api/option"
-	"google.golang.org/api/sheets/v4"
-	log "github.com/sirupsen/logrus"
-	"strconv"
+	"github.com/riceChuang/marryme/db"
+	"github.com/riceChuang/marryme/types"
 	"strings"
-
-	"context"
 )
 
 type GuestRepo struct {
-	Guests []*Guest
+	Guests []*types.Guest
 }
 
-func NewGuestsRepo(conf *config.Config) ( repo *GuestRepo, err error) {
+func NewGuestsRepo(conf *config.Config) (repo *GuestRepo, err error) {
 
-	guests := []*Guest{}
-	ctx := context.Background()
-	srv, err := sheets.NewService(ctx, option.WithAPIKey(conf.APIKey))
+	googleSheet, err := db.NewGoogleSheet(conf)
 	if err != nil {
-		return nil,fmt.Errorf("Unable to retrieve Sheets client: %v", err)
+		return nil, err
 	}
 
-	readRange := "Class Data!A2:E"
-	resp, err := srv.Spreadsheets.Values.Get(conf.SpreadSheetID, readRange).Do()
+	guests, err := googleSheet.GetGuests()
 	if err != nil {
-		return nil,fmt.Errorf("Unable to retrieve data from sheet: %v", err)
-	}
-
-	for _, row := range resp.Values {
-		accompanies, err := strconv.ParseUint(row[2].(string), 10, 32)
-		if err != nil {
-			log.Infof("Ignore name: %s", row[0].(string))
-			continue
-		}
-
-		money, err := strconv.ParseUint(row[3].(string), 10, 32)
-		if err != nil {
-			log.Infof("Ignore name: %s", row[0].(string))
-			continue
-		}
-
-		isAttend := false
-		if len(row) == 5 {
-			tmpAttend := row[4].(string)
-			if tmpAttend == "是" || tmpAttend == "y" || tmpAttend == "Y" {
-				isAttend = true
-			}
-		}
-
-		guests = append(guests, &Guest{
-			Name:        row[0].(string),
-			NickName:    row[1].(string),
-			Accompanies: uint8(accompanies),
-			Money:       uint(money),
-			IsAttend:    isAttend,
-		})
+		return nil, err
 	}
 
 	repo = &GuestRepo{
@@ -67,8 +29,8 @@ func NewGuestsRepo(conf *config.Config) ( repo *GuestRepo, err error) {
 	return
 }
 
-func (g *GuestRepo) SearchGuests(source string) []Guest {
-	var matches []Guest
+func (g *GuestRepo) SearchGuests(source string) []types.Guest {
+	var matches []types.Guest
 
 	for _, guest := range g.Guests {
 		if match(source, guest.Name, guest.NickName) {
@@ -76,6 +38,12 @@ func (g *GuestRepo) SearchGuests(source string) []Guest {
 		}
 	}
 	return matches
+}
+
+func (g *GuestRepo) SaveGuests()(err error) {
+	for _, guest := range g.Guests{
+		
+	}
 }
 
 func match(source string, name string, nickName string) bool {

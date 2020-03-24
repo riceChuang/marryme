@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/riceChuang/marryme/config"
 	"github.com/riceChuang/marryme/handler"
 	"github.com/riceChuang/marryme/repo"
 	log "github.com/sirupsen/logrus"
-	"github.com/riceChuang/marryme/config"
 )
 
 func main() {
