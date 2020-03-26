@@ -2,16 +2,18 @@ package handler
 
 import "github.com/gin-gonic/gin"
 
-type Handler struct{}
-
 func Router(router *gin.Engine) {
 
-	//h:= &Handler{}
+	h := &Handler{}
 	v1 := router.Group("/v1")
 	{
 		list := v1.Group("/user")
 		{
-			list.POST("/")
+			list.POST("/", h.createUser)
+			list.GET("/", h.getUser)
+			list.GET("/:id", h.getUserByID)
+			list.DELETE("/:id", h.deleteUser)
+			list.PATCH("/:id", h.updateUser)
 		}
 	}
 }

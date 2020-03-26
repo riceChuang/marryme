@@ -3,11 +3,12 @@ package types
 import "time"
 
 type Guest struct {
-	Name        string
-	NickName    string
-	Accompanies uint8
-	Money       uint
-	IsAttend    bool
-	UpdateAt    time.Time
-	CreatedAt   time.Time
+	ID          int       `json:"id"`
+	Name        string    `json:"name"`
+	NickName    string    `json:"nick_name"`
+	Accompanies int       `json:"accompanies"`
+	Money       int       `json:"money"`
+	IsAttend    string    `json:"is_attend"`
+	UpdateAt    time.Time `json:"update_at"`
+	CreatedAt   time.Time `json:"created_at"`
 }
